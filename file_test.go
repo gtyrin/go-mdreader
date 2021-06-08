@@ -16,10 +16,10 @@ import (
 
 // Тестовые файлы.
 const (
-	testFLAC = "../../../../../../testdata/audio/file/flac/440_hz_mono.flac"
-	testDSF  = "../../../../../../testdata/audio/file/dsf/440_hz_mono.dsf"
-	testMP3  = "../../../../../../testdata/audio/file/mp3/440_hz_mono.mp3"
-	testWV   = "../../../../../../testdata/audio/file/wavpack/440_hz_mono.wv"
+	testFLAC = "testdata/flac/440_hz_mono.flac"
+	testDSF  = "testdata/dsf/440_hz_mono.dsf"
+	testMP3  = "testdata/mp3/440_hz_mono.mp3"
+	testWV   = "testdata/wavpack/440_hz_mono.wv"
 )
 
 var testFileData = map[string]TrackMetadataReader{
