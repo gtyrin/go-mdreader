@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 
-	"github.com/gtyrin/go-audio/mdreader/file"
 	md "github.com/gtyrin/go-audiomd"
 	srv "github.com/gtyrin/go-service"
 )
@@ -138,7 +137,7 @@ func (ar *AudioMetadataReader) releaseInfo(delivery *amqp.Delivery) {
 }
 
 func (ar *AudioMetadataReader) readTrackFile(fn string, r *md.Release) (*md.Track, error) {
-	if reader := file.Reader(fn); reader != nil {
+	if reader := Reader(fn); reader != nil {
 		f, err := os.OpenFile(fn, os.O_RDONLY, 0444)
 		if err != nil {
 			return nil, err

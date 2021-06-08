@@ -1,4 +1,4 @@
-package file
+package service
 
 // Specification: https://www.wavpack.com/WavPack5FileFormat.pdf
 // Apev2 specification: https://wiki.hydrogenaud.io/index.php?title=APEv2_specification
