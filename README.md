@@ -1,6 +1,13 @@
 # go-mdreader #
 
-Парсер метаданных аудиофайлов.
+Микросервис с парсером метаданных аудиофайлов. Обмен сообщениями реализован с использованием
+[RabbitMQ](https://www.rabbitmq.com).
+
+Поддержка аудиоформатов:
+- mp3
+- flac
+- dsf
+- wavpack (без аудиосвойств треков)
 
 Пример использования:
 
@@ -32,7 +39,7 @@
 			    mdreader.ServiceName, mdreader.ServiceVersion, srv.RunModeName(*idle)))
 
 	    cl, err := mdreader.NewAudioMetadataReader(*connstr)
-	    srv.FailOnError(err, "Failed to create Discogs client")
+	    srv.FailOnError(err, "Failed to create metadata reader")
 
 	    cl.Idle = *idle
 
