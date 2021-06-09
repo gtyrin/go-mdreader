@@ -12,9 +12,8 @@ import (
 	"github.com/streadway/amqp"
 
 	md "github.com/gtyrin/go-audiomd"
+	"github.com/gtyrin/go-mdreader/file"
 	srv "github.com/gtyrin/go-service"
-
-	file "github.com/gtyrin/go-mdreader/file"
 )
 
 // Описание сервиса
