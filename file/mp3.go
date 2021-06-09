@@ -2,7 +2,7 @@
 // Header structure image link: https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Mp3filestructure.svg/1257px-Mp3filestructure.svg.png
 // Specification link: http://www.mp3-tech.org/programmer/docs/mp3_theory.pdf
 
-package service
+package file
 
 import (
 	"errors"

@@ -13,6 +13,8 @@ import (
 
 	md "github.com/gtyrin/go-audiomd"
 	srv "github.com/gtyrin/go-service"
+
+	file "github.com/gtyrin/go-mdreader/file"
 )
 
 // Описание сервиса
@@ -137,7 +139,7 @@ func (ar *AudioMetadataReader) releaseInfo(delivery *amqp.Delivery) {
 }
 
 func (ar *AudioMetadataReader) readTrackFile(fn string, r *md.Release) (*md.Track, error) {
-	if reader := Reader(fn); reader != nil {
+	if reader := file.Reader(fn); reader != nil {
 		f, err := os.OpenFile(fn, os.O_RDONLY, 0444)
 		if err != nil {
 			return nil, err

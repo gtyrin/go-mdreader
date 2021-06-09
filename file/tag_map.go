@@ -3,7 +3,7 @@
 //
 // По материалам из: https://wiki.hydrogenaud.io/index.php?title=Tag_Mapping
 
-package service
+package file
 
 import (
 	"errors"

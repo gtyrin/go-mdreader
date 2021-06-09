@@ -1,7 +1,7 @@
 // DSF-files processing module.
 // Specification link: http://dsd-guide.com/sites/default/files/white-papers/DSFFileFormatSpec_E.pdf
 
-package service
+package file
 
 import (
 	"bytes"
