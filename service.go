@@ -21,7 +21,6 @@ const (
 	ServiceSubsystem   = "audio"
 	ServiceName        = "mdreader"
 	ServiceDescription = "Audio Metadata Reader"
-	ServiceVersion     = "1.0.11"
 )
 
 type config struct {
@@ -69,7 +68,6 @@ func (ar *AudioMetadataReader) RunCmdByName(cmd string, delivery *amqp.Delivery)
 			Subsystem:   ServiceSubsystem,
 			Name:        ServiceName,
 			Description: ServiceDescription,
-			Version:     ServiceVersion,
 		}
 		go ar.Service.Info(delivery, &version)
 	default:

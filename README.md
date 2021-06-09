@@ -35,8 +35,8 @@
 	    flag.Parse()
 
 	    log.Info(
-		    fmt.Sprintf("%s %s starting in %s mode..",
-			    mdreader.ServiceName, mdreader.ServiceVersion, srv.RunModeName(*idle)))
+		    fmt.Sprintf("%s starting in %s mode..",
+			    mdreader.ServiceName, srv.RunModeName(*idle)))
 
 	    cl, err := mdreader.NewAudioMetadataReader(*connstr)
 	    srv.FailOnError(err, "Failed to create metadata reader")
