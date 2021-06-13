@@ -7,6 +7,7 @@ import (
 
 	md "github.com/ytsiuryn/ds-audiomd"
 	binary "github.com/ytsiuryn/go-binary"
+	enc "github.com/ytsiuryn/go-stringutils"
 )
 
 const id3Sign = "ID3"
@@ -35,14 +36,14 @@ func id3v2DecodeString(b []byte) (string, error) {
 	case 0:
 		ret = b[1:]
 	case 1:
-		ret, err = binary.FromUTF16LE(b[1:])
+		ret, err = enc.FromUTF16LE(b[1:])
 	case 2:
-		ret, err = binary.FromUTF16BE(b[1:])
+		ret, err = enc.FromUTF16BE(b[1:])
 	}
 	if err != nil {
 		return "", err
 	}
-	return string(binary.FromASCIIZ(ret)), nil
+	return string(enc.FromASCIIZ(ret)), nil
 }
 
 // ID3v2Metadata is main fuction to read ID3 section data

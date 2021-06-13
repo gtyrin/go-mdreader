@@ -12,9 +12,8 @@ import (
 	"strings"
 
 	md "github.com/ytsiuryn/ds-audiomd"
-	binary "github.com/ytsiuryn/go-binary"
 	intutils "github.com/ytsiuryn/go-intutils"
-	parser "github.com/ytsiuryn/go-stringutils"
+	"github.com/ytsiuryn/go-stringutils"
 )
 
 // TagKey - тип для обозначения обобщенных констант.
@@ -328,9 +327,9 @@ func ProcessTags(tags map[TagKey]string, r *md.Release, t *md.Track) error {
 		case DiscNumber:
 			err = setTrackDiscNumber(v, r, t)
 		case DiscTotal:
-			r.TotalDiscs = parser.NaiveStringToInt(v)
+			r.TotalDiscs = stringutils.NaiveStringToInt(v)
 		case TrackTotal:
-			r.TotalTracks = parser.NaiveStringToInt(v)
+			r.TotalTracks = stringutils.NaiveStringToInt(v)
 		case TrackNumber:
 			setTrackPositionAndTotalTracks(v, r, t)
 		// PartNumber
@@ -427,7 +426,7 @@ func setTrackPositionAndTotalTracks(v string, r *md.Release, t *md.Track) {
 		t.SetPosition(flds[0])
 	}
 	if fldsLen == 2 {
-		r.TotalTracks = parser.NaiveStringToInt(flds[1])
+		r.TotalTracks = stringutils.NaiveStringToInt(flds[1])
 	}
 }
 
@@ -450,28 +449,28 @@ func parseAndAddCountries(v string, r *md.Release) {
 
 // Разбор числового значения даты
 func parseAndSetYears(yearString string, r *md.Release) {
-	flds := parser.SplitIntoRegularFields(yearString)
+	flds := stringutils.SplitIntoRegularFields(yearString)
 	fldLen := len(flds)
 	if fldLen == 0 {
 		return
 	} else if fldLen == 1 {
-		r.Year = parser.NaiveStringToInt(flds[len(flds)-1])
+		r.Year = stringutils.NaiveStringToInt(flds[len(flds)-1])
 	} else {
-		r.Original.Year = parser.NaiveStringToInt(flds[0])
-		r.Year = parser.NaiveStringToInt(flds[len(flds)-1])
+		r.Original.Year = stringutils.NaiveStringToInt(flds[0])
+		r.Year = stringutils.NaiveStringToInt(flds[len(flds)-1])
 	}
 }
 
 // Разбор timestamp ISO 8601 (yyyy-MM-ddTHH:mm:ss) или ее подстроки для Release.Year.
 // TODO: вынести разбор в отдельную функцию.
 func parseAndSetYearFromDate(v string, r *md.Release) {
-	r.Year = parser.NaiveStringToInt(v)
+	r.Year = stringutils.NaiveStringToInt(v)
 }
 
 // Разбор timestamp ISO 8601 (yyyy-MM-ddTHH:mm:ss) или ее подстроки для Release.Album.Year.
 // TODO: вынести разбор в отдельную функцию.
 func parseAndSetOriginalYearFromDate(v string, r *md.Release) {
-	r.Original.Year = parser.NaiveStringToInt(v)
+	r.Original.Year = stringutils.NaiveStringToInt(v)
 }
 
 func setCopyright(cr string, r *md.Release) {
@@ -498,9 +497,9 @@ func setCatno(v string, r *md.Release) {
 
 // Possible format is a list of {soloists,conductor,orchestra}, separated with ';'.
 func parseAndAddActors(names string, track *md.Track) {
-	binary.PanicIfNonUtf8(names)
-	for _, name := range parser.SplitIntoRegularFieldsWithDelimiters(names, []rune{';'}) {
-		flds := parser.SplitIntoRegularFieldsWithDelimiters(name, []rune{'-', ',', '(', ')'})
+	stringutils.PanicIfNonUtf8(names)
+	for _, name := range stringutils.SplitIntoRegularFieldsWithDelimiters(names, []rune{';'}) {
+		flds := stringutils.SplitIntoRegularFieldsWithDelimiters(name, []rune{'-', ',', '(', ')'})
 		if len(flds) > 1 {
 			for _, role := range flds[1:] {
 				track.Record.Actors.AddRole(strings.TrimSpace(flds[0]), strings.TrimSpace(role))
@@ -517,7 +516,7 @@ func parseAndSetTrackDuration(v string, t *md.Track) {
 }
 
 func setMood(moods string, track *md.Track) {
-	for _, moodName := range parser.SplitIntoRegularFields(moods) {
+	for _, moodName := range stringutils.SplitIntoRegularFields(moods) {
 		track.Record.Moods = append(track.Record.Moods, md.MoodFromName(moodName))
 	}
 }
