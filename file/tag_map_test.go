@@ -3,8 +3,8 @@ package file
 import (
 	"testing"
 
-	md "github.com/gtyrin/go-audiomd"
-	collection "github.com/gtyrin/go-collection"
+	md "github.com/ytsiuryn/ds-audiomd"
+	collection "github.com/ytsiuryn/go-collection"
 )
 
 var tagMapTestData = map[TagKey]string{

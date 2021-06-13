@@ -8,8 +8,8 @@ import (
 	"errors"
 	"io"
 
-	md "github.com/gtyrin/go-audiomd"
-	binary "github.com/gtyrin/go-binary"
+	md "github.com/ytsiuryn/ds-audiomd"
+	binary "github.com/ytsiuryn/go-binary"
 )
 
 var (

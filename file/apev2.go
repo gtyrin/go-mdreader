@@ -6,9 +6,9 @@ import (
 	"io"
 	"strings"
 
-	md "github.com/gtyrin/go-audiomd"
-	binary "github.com/gtyrin/go-binary"
-	collection "github.com/gtyrin/go-collection"
+	md "github.com/ytsiuryn/ds-audiomd"
+	binary "github.com/ytsiuryn/go-binary"
+	collection "github.com/ytsiuryn/go-collection"
 )
 
 var (

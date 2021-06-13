@@ -11,9 +11,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 
-	md "github.com/gtyrin/go-audiomd"
-	"github.com/gtyrin/go-mdreader/file"
-	srv "github.com/gtyrin/go-service"
+	md "github.com/ytsiuryn/ds-audiomd"
+	"github.com/ytsiuryn/ds-mdreader/file"
+	srv "github.com/ytsiuryn/ds-service"
 )
 
 // Описание сервиса

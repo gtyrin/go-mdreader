@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"strings"
 
-	md "github.com/gtyrin/go-audiomd"
-	binary "github.com/gtyrin/go-binary"
-	intutils "github.com/gtyrin/go-intutils"
-	parser "github.com/gtyrin/go-stringutils"
+	md "github.com/ytsiuryn/ds-audiomd"
+	binary "github.com/ytsiuryn/go-binary"
+	intutils "github.com/ytsiuryn/go-intutils"
+	parser "github.com/ytsiuryn/go-stringutils"
 )
 
 // TagKey - тип для обозначения обобщенных констант.

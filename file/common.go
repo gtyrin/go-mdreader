@@ -8,7 +8,7 @@ import (
 	// 	"regexp"
 	// 	"strconv"
 
-	md "github.com/gtyrin/go-audiomd"
+	md "github.com/ytsiuryn/ds-audiomd"
 )
 
 // TrackMetadataReader - общий интерфейс читателей метаданных аудиотреков различных расширений.
