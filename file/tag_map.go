@@ -11,9 +11,10 @@ import (
 	"strconv"
 	"strings"
 
+	binary "github.com/ytsiuryn/go-binary"
+	stringutils "github.com/ytsiuryn/go-stringutils"
 	md "github.com/ytsiuryn/ds-audiomd"
 	intutils "github.com/ytsiuryn/go-intutils"
-	"github.com/ytsiuryn/go-stringutils"
 )
 
 // TagKey - тип для обозначения обобщенных констант.
@@ -497,7 +498,7 @@ func setCatno(v string, r *md.Release) {
 
 // Possible format is a list of {soloists,conductor,orchestra}, separated with ';'.
 func parseAndAddActors(names string, track *md.Track) {
-	stringutils.PanicIfNonUtf8(names)
+	binary.PanicIfNonUtf8(names)
 	for _, name := range stringutils.SplitIntoRegularFieldsWithDelimiters(names, []rune{';'}) {
 		flds := stringutils.SplitIntoRegularFieldsWithDelimiters(name, []rune{'-', ',', '(', ')'})
 		if len(flds) > 1 {

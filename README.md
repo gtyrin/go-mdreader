@@ -3,13 +3,13 @@
 Микросервис с парсером метаданных аудиофайлов. Обмен сообщениями реализован с использованием
 [RabbitMQ](https://www.rabbitmq.com).
 
-Поддержка аудиоформатов:
-- mp3
-- flac
-- dsf
-- wavpack (без аудиосвойств треков)
+## Поддержка аудиоформатов:
+- mp3 (id3v1/id3v2)
+- flac (id3v2/vorbis comments)
+- dsf (id3v2)
+- wavpack (id3v2/apev2; без аудиосвойств треков)
 
-Пример использования:
+## Пример использования:
 
     package main
 
@@ -19,8 +19,8 @@
 
 	    log "github.com/sirupsen/logrus"
 
-	    mdreader "github.com/gtyrin/go-mdreader"
-	    srv "github.com/gtyrin/go-service"
+	    mdreader "github.com/ytsiuryn/ds-mdreader"
+	    srv "github.com/ytsiuryn/ds-service"
     )
 
     func main() {
@@ -28,20 +28,13 @@
 		    "msg-server",
 		    "amqp://guest:guest@localhost:5672/",
 		    "Message server connection string")
-	    idle := flag.Bool(
-		    "idle",
-		    false,
-		    "Free-running mode of the service to the message queue cleaning")
 	    flag.Parse()
 
 	    log.Info(
-		    fmt.Sprintf("%s starting in %s mode..",
-			    mdreader.ServiceName, srv.RunModeName(*idle)))
+		    fmt.Sprintf("%s starting..", mdreader.ServiceName))
 
 	    cl, err := mdreader.NewAudioMetadataReader(*connstr)
 	    srv.FailOnError(err, "Failed to create metadata reader")
-
-	    cl.Idle = *idle
 
 	    defer cl.Close()
 
