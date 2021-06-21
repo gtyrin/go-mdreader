@@ -9,7 +9,7 @@
 - dsf (id3v2)
 - wavpack (id3v2/apev2; без аудиосвойств треков)
 
-## Пример использования:
+## Пример запуска микросервиса:
 
     package main
 
@@ -40,3 +40,7 @@
 
 	    cl.Dispatch(cl)
     }
+
+## Пример клиента Python
+
+См. файл [mdreader.py](https://github.com/ytsiuryn/ds-mdreader/blob/main/mdreader.py)
