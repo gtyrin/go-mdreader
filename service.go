@@ -39,9 +39,9 @@ type assumption struct {
 }
 
 // NewAudioMetadataReader создает объект нового клиента AudioMetadataReader.
-func NewAudioMetadataReader(connstr string) (*AudioMetadataReader, error) {
+func NewAudioMetadataReader(connstr, optFile string) (*AudioMetadataReader, error) {
 	conf := config{}
-	srv.ReadConfig("mdreader.yml", &conf)
+	srv.ReadConfig(optFile, &conf)
 
 	log.SetLevel(srv.LogLevel(conf.Product))
 
