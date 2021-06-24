@@ -10,7 +10,7 @@
 - wavpack (id3v2/apev2; без аудиосвойств треков)
 
 ## Пример запуска микросервиса:
-
+```go
     package main
 
     import (
@@ -30,8 +30,7 @@
 		    "Message server connection string")
 	    flag.Parse()
 
-	    log.Info(
-		    fmt.Sprintf("%s starting..", mdreader.ServiceName))
+	    log.Info(fmt.Sprintf("%s starting..", mdreader.ServiceName))
 
 	    cl, err := mdreader.NewAudioMetadataReader(*connstr)
 	    srv.FailOnError(err, "Failed to create metadata reader")
@@ -39,7 +38,8 @@
 	    defer cl.Close()
 
 	    cl.Dispatch(cl)
-    }
+	}
+```
 
 ## Пример клиента Python
 
