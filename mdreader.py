@@ -1,7 +1,8 @@
-import common
 import json
 import os
+import pika
 import unittest
+import uuid
 
 # Данные для сверки значений тегов для аудиофайлов 440_hz_mono.*:
 # 					                mp3	    flac	wv	    dsf	    значение
@@ -24,8 +25,55 @@ import unittest
 # - rutracker, DISCOGS_RELEASE_ID	+	    +	    +		        123456789
 # - cover					        +	    +	    +
 
+class RPCClient(object):
 
-class AudioMetadataReader(common.RPCClient):
+    def __init__(self, rpc_queue):
+        self.rpc_queue = rpc_queue
+
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host='localhost'))
+
+        self.channel = self.connection.channel()
+
+        result = self.channel.queue_declare(queue='', exclusive=True)
+        self.callback_queue = result.method.queue
+
+        self.channel.basic_consume(
+            queue=self.callback_queue,
+            on_message_callback=self._on_response,
+            auto_ack=True)
+
+    def close(self):
+        self.channel.close()
+        self.connection.close()
+
+    def _on_response(self, ch, method, props, body):
+        if self.corr_id == props.correlation_id:
+            self.response = body
+
+    def call(self, payload):
+        self.response = None
+        self.corr_id = str(uuid.uuid4())
+        self.channel.basic_publish(
+            exchange='',
+            routing_key=self.rpc_queue,
+            properties=pika.BasicProperties(
+                reply_to=self.callback_queue,
+                correlation_id=self.corr_id,
+            ),
+            body=json.dumps(payload))
+        while self.response is None:
+            self.connection.process_data_events()
+        return self.response
+
+    def info(self):
+        return self.call({"cmd": "info", "params": {}})
+
+    def ping(self):
+        return self.call({"cmd": "ping", "params": {}})
+
+
+class AudioMetadataReader(RPCClient):
     def __init__(self):
         super().__init__('mdreader')
 
@@ -44,7 +92,7 @@ class TestMetadataReader(unittest.TestCase):
         self.assertEqual(self.r.ping(), b'')
 
     def release(self, ext):
-        dir = f"testdata/audio/file/{ext}"
+        dir = os.path.abspath(f"file/testdata/{ext}")
         self.assertTrue(os.path.exists(dir))
         resp = json.loads(self.r.release(dir))
         if resp.get("error"):
@@ -56,13 +104,13 @@ class TestMetadataReader(unittest.TestCase):
         r = resp["release"]
         t = resp["release"]["tracks"][0]
         self.assertEqual(r["title"], "test_album_title")
-        self.assertEqual(r["work"]["actors"][0]["name"], "test_composer")
-        self.assertEqual(r["recording"]["actors"][0]["name"], "test_performer")
-        self.assertEqual(r["recording"]["genres"][0], "test_genre")
+        self.assertEqual(r["actors"][0]["name"], "test_performer")
         self.assertEqual(r["discs"][0]["number"], 1)
         self.assertEqual(r["total_tracks"], 10)
+        self.assertEqual(r["tracks"][0]["position"], "03")
+        self.assertEqual(t["composition"]["actors"][0]["name"], "test_composer")
         self.assertEqual(t["record"]["actors"][0]["name"], "test_track_artist")
-        self.assertEqual(resp["release"]["tracks"][0]["position"], "03")
+        self.assertEqual(t["record"]["genres"][0], "test_genre")
         self.assertEqual(t["title"], "test_track_title")
         basename, ext = (os.path.splitext(t["file_info"]["file_name"]))
         if ext not in (".mp3", ".wv"):  # TODO
@@ -76,7 +124,7 @@ class TestMetadataReader(unittest.TestCase):
             self.assertEqual(
                 r["pictures"][0]["pict_meta"]["mime_type"],
                 "image/jpeg")
-            self.assertEqual(r["pictures"][0]["pict_type"], 3)
+            self.assertEqual(r["pictures"][0]["pict_type"], "cover_front")
         self.assertEqual(r["publishing"][0]["name"], "test_label")
         self.assertEqual(r["publishing"][0]["catno"], "test_catno")
         self.assertEqual(r["country"], "test_country")
