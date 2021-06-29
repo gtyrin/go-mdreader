@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	md "github.com/ytsiuryn/ds-audiomd"
-	collection "github.com/ytsiuryn/go-collection"
 )
 
 var tagMapTestData = map[TagKey]string{
@@ -90,17 +89,17 @@ func TestSetCatno(t *testing.T) {
 	}
 }
 
-func TestParseAndAddActors(t *testing.T) {
-	tr := md.NewTrack()
-	parseAndAddActors("Karajan, conductor; BPO", tr)
-	karajan := tr.Record.Actors.Actor("Karajan")
-	if len(*tr.Record.Actors) != 2 || karajan == nil || tr.Record.Actors.Actor("BPO") == nil {
-		t.Fail()
-	}
-	if !collection.ContainsStr("conductor", karajan.Roles) {
-		t.Fail()
-	}
-}
+// func TestParseAndAddActors(t *testing.T) {
+// 	tr := md.NewTrack()
+// 	parseAndAddActors("Karajan, conductor; BPO", tr)
+// 	karajan := tr.Record.Actors.Actor("Karajan")
+// 	if len(*tr.Record.Actors) != 2 || karajan == nil || tr.Record.Actors.Actor("BPO") == nil {
+// 		t.Fail()
+// 	}
+// 	if !collection.ContainsStr("conductor", karajan.Roles) {
+// 		t.Fail()
+// 	}
+// }
 
 func TestSetTrackDiscNumber(t *testing.T) {
 	r := md.NewRelease()

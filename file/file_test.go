@@ -57,16 +57,22 @@ func TestAudioFiles(t *testing.T) {
 	}
 }
 
+func firstActor(actors md.ActorIDs) md.ActorName {
+	for k := range actors {
+		return k
+	}
+	return ""
+}
+
 func checkMdReaderResult(t *testing.T, r *md.Release, tr *md.Track) {
 	ext := filepath.Ext(tr.FileInfo.FileName)
 	basename := strings.TrimSuffix(tr.FileInfo.FileName, ext)
 	assert.Equal(t, r.Title, "test_album_title")
-	// assert.Equal(t, r.Work.Actors.ActorByIndex(0).Name, "test_composer")
-	assert.Equal(t, r.Actors.ActorByIndex(0).Name, "test_performer")
+	assert.Equal(t, firstActor(r.Actors), md.ActorName("test_performer"))
 	assert.Equal(t, tr.Record.Genres[0], "test_genre")
 	assert.Equal(t, r.Discs[0].Number, 1)
 	assert.Equal(t, r.TotalTracks, 10)
-	assert.Equal(t, tr.Record.Actors.ActorByIndex(0).Name, "test_track_artist")
+	assert.Equal(t, firstActor(tr.Record.Actors), md.ActorName("test_track_artist"))
 	assert.Equal(t, tr.Position, "03")
 	assert.Equal(t, tr.Title, "test_track_title")
 	if !collection.ContainsStr(ext, []string{".mp3", ".wv"}) { // TODO

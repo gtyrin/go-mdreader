@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"strings"
 
-	binary "github.com/ytsiuryn/go-binary"
-	stringutils "github.com/ytsiuryn/go-stringutils"
 	md "github.com/ytsiuryn/ds-audiomd"
+	binary "github.com/ytsiuryn/go-binary"
 	intutils "github.com/ytsiuryn/go-intutils"
+	stringutils "github.com/ytsiuryn/go-stringutils"
 )
 
 // TagKey - тип для обозначения обобщенных констант.
@@ -290,40 +290,40 @@ func ProcessTags(tags map[TagKey]string, r *md.Release, t *md.Track) error {
 		// Version
 		// --- People & Organizations ---
 		case AlbumArtist:
-			r.Actors.AddActorEntry(v)
+			r.Actors.Add(v, "", "")
 		case TrackArtist, InvolvedPeople:
 			parseAndAddActors(v, t)
 		case Arranger:
-			t.Record.Actors.AddRole(v, "arranger")
+			t.Record.ActorRoles.Add(v, "arranger")
 		case AuthorWriter, Writer:
-			t.Composition.Actors.AddRole(v, "writer")
+			t.Composition.ActorRoles.Add(v, "writer")
 		case Composer:
-			t.Composition.Actors.AddRole(v, "composer")
+			t.Composition.ActorRoles.Add(v, "composer")
 		case Conductor:
-			t.Record.Actors.AddRole(v, "conductor")
+			t.Record.ActorRoles.Add(v, "conductor")
 		case Engineer:
-			t.Record.Actors.AddRole(v, "engineer")
+			t.Record.ActorRoles.Add(v, "engineer")
 		case Ensemble:
-			t.Record.Actors.AddRole(v, "ensemble")
+			t.Record.ActorRoles.Add(v, "ensemble")
 		case Lyricist:
-			t.Composition.Actors.AddRole(v, "lyricist")
+			t.Composition.ActorRoles.Add(v, "lyricist")
 		case MixDJ:
-			t.Record.Actors.AddRole(v, "mix-DJ")
+			t.Record.ActorRoles.Add(v, "mix-DJ")
 		case MixEngineer:
-			t.Record.Actors.AddRole(v, "mix-engineer")
+			t.Record.ActorRoles.Add(v, "mix-engineer")
 		// MusicianCredits
 		// Organisation
 		// OriginalArtist
 		case Performer:
-			r.Actors.AddRole(v, "performer")
+			r.ActorRoles.Add(v, "performer")
 		case Producer:
-			t.Record.Actors.AddRole(v, "producer")
+			t.Record.ActorRoles.Add(v, "producer")
 		case Publisher, Label:
 			setLabels(v, r)
 		case RemixedBy:
-			t.Record.Actors.AddRole(v, "remixer")
+			t.Record.ActorRoles.Add(v, "remixer")
 		case Soloists:
-			t.Record.Actors.AddRole(v, "soloist")
+			t.Record.ActorRoles.Add(v, "soloist")
 		// --- Counts & Indexes ---
 		case DiscNumber:
 			err = setTrackDiscNumber(v, r, t)
@@ -503,10 +503,10 @@ func parseAndAddActors(names string, track *md.Track) {
 		flds := stringutils.SplitIntoRegularFieldsWithDelimiters(name, []rune{'-', ',', '(', ')'})
 		if len(flds) > 1 {
 			for _, role := range flds[1:] {
-				track.Record.Actors.AddRole(strings.TrimSpace(flds[0]), strings.TrimSpace(role))
+				track.Record.ActorRoles.Add(strings.TrimSpace(flds[0]), strings.TrimSpace(role))
 			}
 		} else {
-			track.Record.Actors.AddActorEntry(name)
+			track.Record.Actors.Add(name, "", "")
 		}
 	}
 }
