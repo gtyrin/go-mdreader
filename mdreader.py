@@ -104,12 +104,12 @@ class TestMetadataReader(unittest.TestCase):
         r = resp["release"]
         t = resp["release"]["tracks"][0]
         self.assertEqual(r["title"], "test_album_title")
-        self.assertEqual(r["actors"][0]["name"], "test_performer")
+        self.assertEqual(list(r["actors"].keys())[0], "test_performer")
         self.assertEqual(r["discs"][0]["number"], 1)
         self.assertEqual(r["total_tracks"], 10)
         self.assertEqual(r["tracks"][0]["position"], "03")
-        self.assertEqual(t["composition"]["actors"][0]["name"], "test_composer")
-        self.assertEqual(t["record"]["actors"][0]["name"], "test_track_artist")
+        self.assertEqual(list(t["composition"]["actor_roles"].keys())[0], "test_composer")
+        self.assertEqual(list(t["record"]["actors"].keys())[0], "test_track_artist")
         self.assertEqual(t["record"]["genres"][0], "test_genre")
         self.assertEqual(t["title"], "test_track_title")
         basename, ext = (os.path.splitext(t["file_info"]["file_name"]))
