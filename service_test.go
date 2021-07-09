@@ -54,10 +54,8 @@ func TestDirRequest(t *testing.T) {
 		correlationID, data, _ := CreateDirRequest("testdata/" + subdir)
 		cl.Request(ServiceName, correlationID, data)
 
-		suggestions, _ := ParseDirAnswer(cl.Result(correlationID))
-		for _, suggestion := range suggestions {
-			checkResp(t, suggestion)
-		}
+		suggestion, _ := ParseDirAnswer(cl.Result(correlationID))
+		checkResp(t, suggestion)
 	}
 }
 
@@ -70,7 +68,7 @@ func checkResp(t *testing.T, suggestion *md.Suggestion) {
 	assert.Equal(t, r.TotalTracks, 10)
 	assert.Equal(t, r.Tracks[0].Position, "03")
 	assert.Equal(t, tr.Composition.ActorRoles.First(), "test_composer")
-	// assert.Equal(t, tr.Record.Actors.["record"]["actors"].keys())[0], "test_track_artist")
+	assert.Equal(t, tr.Record.Actors.First(), "test_track_artist")
 	assert.Equal(t, tr.Record.Genres[0], "test_genre")
 	assert.Equal(t, tr.Title, "test_track_title")
 	ext := filepath.Ext(tr.FileName)

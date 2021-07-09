@@ -28,7 +28,7 @@ type AudioMdReader struct {
 	*srv.Service
 }
 
-type assumption struct {
+type Assumption struct {
 	ServiceName string `json:"service"`
 	*md.Release `json:"release"`
 }
@@ -106,17 +106,17 @@ func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Del
 		}
 		r.Tracks = append(r.Tracks, track)
 	}
-	r.Optimize()
-	res := assumption{
+	res := md.Suggestion{
 		ServiceName: ServiceName,
 		Release:     r,
 	}
+	res.Optimize()
 	// отправка ответа
-	if assumptionJSON, err := json.Marshal(res); err != nil {
+	if suggestionJSON, err := json.Marshal(res); err != nil {
 		ar.AnswerWithError(delivery, err, "Response")
 	} else {
-		ar.Log.Debug(string(assumptionJSON))
-		ar.Answer(delivery, assumptionJSON)
+		ar.Log.Debug(string(suggestionJSON))
+		ar.Answer(delivery, suggestionJSON)
 	}
 }
 

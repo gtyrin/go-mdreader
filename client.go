@@ -27,10 +27,10 @@ func CreateDirRequest(dir string) (string, []byte, error) {
 }
 
 // ParseDirAnswer разбирает ответ с предложением метаданных релиза.
-func ParseDirAnswer(data []byte) ([]*md.Suggestion, error) {
-	suggestions := []*md.Suggestion{}
+func ParseDirAnswer(data []byte) (*md.Suggestion, error) {
+	suggestions := md.Suggestion{}
 	if err := json.Unmarshal(data, &suggestions); err != nil {
 		return nil, err
 	}
-	return suggestions, nil
+	return &suggestions, nil
 }
