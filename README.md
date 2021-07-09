@@ -15,15 +15,8 @@
 |-------|--------------------------------------|
 |release|чтение метаданных альбома в каталоге  |
 |ping   |проверка жизнеспособности микросервиса|
-|info   |информация о микросервисе             |
 
 *Пример использования команд приведен в тестовом клиенте в [mdreader.py](https://github.com/ytsiuryn/ds-mdreader/blob/main/mdreader.py)*.
-
-Файл настроек (YAML):
----
-|  Секция/параметр  |                         Назначение                       |
-|-------------------|----------------------------------------------------------|
-|product            |параметр-признак работы микросервиса в неотладочном режиме|
 
 Пример запуска микросервиса:
 ---
@@ -37,7 +30,7 @@
 	    log "github.com/sirupsen/logrus"
 
 	    mdreader "github.com/ytsiuryn/ds-mdreader"
-	    srv "github.com/ytsiuryn/ds-service"
+	    srv "github.com/ytsiuryn/ds-microservice"
     )
 
     func main() {
@@ -45,16 +38,27 @@
 		    "msg-server",
 		    "amqp://guest:guest@localhost:5672/",
 		    "Message server connection string")
-	    flag.Parse()
+
+		product := flag.Bool(
+			"product",
+			false,
+			"product-режим запуска сервиса")
+
+		flag.Parse()
 
 	    log.Info(fmt.Sprintf("%s starting..", mdreader.ServiceName))
 
-	    cl, err := mdreader.NewAudioMetadataReader(*connstr)
-	    srv.FailOnError(err, "Failed to create metadata reader")
+	    reader := mdreader.New()
 
-	    defer cl.Close()
+		msgs := reader.ConnectToMessageBroker(*connstr)
 
-	    cl.Dispatch(cl)
+		if *product {
+			reader.Log.SetLevel(log.InfoLevel)
+		} else {
+			reader.Log.SetLevel(log.DebugLevel)
+		}
+
+		cl.Start(msgs)
 	}
 ```
 

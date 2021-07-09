@@ -66,9 +66,6 @@ class RPCClient(object):
             self.connection.process_data_events()
         return self.response
 
-    def info(self):
-        return self.call({"cmd": "info", "params": {}})
-
     def ping(self):
         return self.call({"cmd": "ping", "params": {}})
 
@@ -78,7 +75,7 @@ class AudioMetadataReader(RPCClient):
         super().__init__('mdreader')
 
     def release(self, dir):
-        return self.call({"cmd": "release", "params": {"dir": dir}})
+        return self.call({"cmd": "release", "path": dir})
 
 
 class TestMetadataReader(unittest.TestCase):
