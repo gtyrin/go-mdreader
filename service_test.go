@@ -6,6 +6,7 @@ import (
 	"sync"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	md "github.com/ytsiuryn/ds-audiomd"
@@ -97,6 +98,7 @@ func startTestService(ctx context.Context) {
 	if testService == nil {
 		testService = New()
 		msgs := testService.ConnectToMessageBroker("amqp://guest:guest@localhost:5672/")
+		testService.Log.SetLevel(log.DebugLevel)
 		go testService.Start(msgs)
 	}
 }

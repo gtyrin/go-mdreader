@@ -70,9 +70,9 @@ func (ar *AudioMdReader) cleanup() {
 // Отображение сведений о выполняемом запросе.
 func (ar *AudioMdReader) logRequest(req *AudioReaderRequest) {
 	if len(req.Path) > 0 {
-		ar.Log.WithField("args", req.Path).Debug(req.Cmd + "()")
+		ar.Log.WithField("args", req.Path).Info(req.Cmd + "()")
 	} else {
-		ar.Log.Debug(req.Cmd + "()")
+		ar.Log.Info(req.Cmd + "()")
 	}
 }
 

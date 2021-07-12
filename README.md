@@ -58,7 +58,7 @@
 			reader.Log.SetLevel(log.DebugLevel)
 		}
 
-		cl.Start(msgs)
+		reader.Start(msgs)
 	}
 ```
 
