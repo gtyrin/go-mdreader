@@ -98,8 +98,8 @@ class TestMetadataReader(unittest.TestCase):
             return resp
 
     def check_resp(self, resp):
-        r = resp["release"]
-        t = resp["release"]["tracks"][0]
+        r = resp["suggestions"][0]["release"]
+        t = resp["suggestions"][0]["release"]["tracks"][0]
         self.assertEqual(r["title"], "test_album_title")
         self.assertEqual(list(r["actors"].keys())[0], "test_performer")
         self.assertEqual(r["discs"][0]["number"], 1)

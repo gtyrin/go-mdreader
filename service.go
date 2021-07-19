@@ -2,6 +2,7 @@ package mdreader
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -106,13 +107,18 @@ func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Del
 		}
 		r.Tracks = append(r.Tracks, track)
 	}
-	res := md.Suggestion{
+	if len(r.Tracks) == 0 {
+		ar.AnswerWithError(delivery, errors.New("directory is not album entry"), req.Path)
+		return
+	}
+	set := md.NewSuggestionSet()
+	set.Suggestions = append(set.Suggestions, &md.Suggestion{
 		ServiceName: ServiceName,
 		Release:     r,
-	}
-	res.Optimize()
+	})
+	set.Optimize()
 	// отправка ответа
-	if suggestionJSON, err := json.Marshal(res); err != nil {
+	if suggestionJSON, err := json.Marshal(set); err != nil {
 		ar.AnswerWithError(delivery, err, "Response")
 	} else {
 		ar.Log.Debug(string(suggestionJSON))

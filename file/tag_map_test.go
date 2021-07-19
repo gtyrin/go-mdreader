@@ -3,6 +3,7 @@ package file
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	md "github.com/ytsiuryn/ds-audiomd"
 )
 
@@ -14,45 +15,34 @@ func TestSetDiscID(t *testing.T) {
 	r := md.NewRelease()
 	tr := md.NewTrack()
 	setDiscID(tagMapTestData, r, tr)
-	if len(r.Discs) > 0 {
-		t.Fail()
-	}
+	assert.Empty(t, r.Discs)
 	tr.Position = "1"
 	setDiscID(tagMapTestData, r, tr)
-	if len(r.Discs) != 1 || r.Discs[0].Number != 1 {
-		t.Fail()
-	}
-	if !r.Disc(1).IDs.Exists("discid") {
-		t.Fail()
-	}
+	assert.Len(t, r.Discs, 1)
+	assert.Equal(t, r.Discs[0].Number, 1)
+	assert.True(t, r.Disc(1).IDs.Exists("discid"))
 }
 
 func TestSetTrackPositionAndTotalTracks(t *testing.T) {
 	r := md.NewRelease()
 	tr := md.NewTrack()
 	setTrackPositionAndTotalTracks("2", r, tr)
-	if tr.Position != "02" || r.TotalTracks != 0 {
-		t.Fail()
-	}
+	assert.Equal(t, tr.Position, "02")
+	assert.Zero(t, r.TotalTracks)
 	setTrackPositionAndTotalTracks("2/10", r, tr)
-	if tr.Position != "02" || r.TotalTracks != 10 {
-		t.Fail()
-	}
+	assert.Equal(t, tr.Position, "02")
+	assert.Equal(t, r.TotalTracks, 10)
 }
 
 func TestParseAndAddDiscFormat(t *testing.T) {
 	r := md.NewRelease()
 	tr := md.NewTrack()
 	parseAndAddDiscFormat("LP", r, tr)
-	if tr.Disc() != nil && tr.Disc().Number != 0 {
-		t.Fail()
-	}
+	assert.Nil(t, tr.Disc())
 	d := r.Disc(1)
 	tr.LinkWithDisc(d)
 	parseAndAddDiscFormat("LP", r, tr)
-	if d.Format.Media != md.MediaLP {
-		t.Fail()
-	}
+	assert.Equal(t, d.Format.Media, md.MediaLP)
 }
 
 // TODO: реализовать!
@@ -63,17 +53,13 @@ func TestParseAndAddLabels(t *testing.T) {
 func TestParseAndSetYears(t *testing.T) {
 	r := md.NewRelease()
 	parseAndSetYears("", r)
-	if r.Year != 0 || r.Original.Year != 0 {
-		t.Fail()
-	}
+	assert.Zero(t, r.Year)
+	assert.Zero(t, r.Original.Year)
 	parseAndSetYears("2005", r)
-	if r.Year != 2005 {
-		t.Fail()
-	}
+	assert.Equal(t, r.Year, 2005)
 	parseAndSetYears("1961,1962/2005", r)
-	if r.Year != 2005 || r.Original.Year != 1961 {
-		t.Fail()
-	}
+	assert.Equal(t, r.Year, 2005)
+	assert.Equal(t, r.Original.Year, 1961)
 }
 
 // TODO: реализовать!
@@ -84,9 +70,8 @@ func TestParseCopyrightAndAddLabels(t *testing.T) {
 func TestSetCatno(t *testing.T) {
 	r := md.NewRelease()
 	setCatno("12345", r)
-	if len(r.Publishing) != 1 && r.Publishing[0].Catno != "12345" {
-		t.Fail()
-	}
+	assert.Len(t, r.Publishing, 1)
+	assert.Equal(t, r.Publishing[0].Catno, "12345")
 }
 
 // func TestParseAndAddActors(t *testing.T) {
@@ -104,21 +89,13 @@ func TestSetCatno(t *testing.T) {
 func TestSetTrackDiscNumber(t *testing.T) {
 	r := md.NewRelease()
 	tr := md.NewTrack()
-	if setTrackDiscNumber("1", r, tr) != nil {
-		t.Fail()
-	}
-	if len(r.Discs) != 0 || tr.Disc() != nil {
-		t.Fail()
-	}
+	assert.Nil(t, setTrackDiscNumber("1", r, tr))
+	assert.Empty(t, r.Discs)
+	assert.Nil(t, tr.Disc())
 	tr.Position = "2"
-	if setTrackDiscNumber("1", r, tr) != nil {
-		t.Fail()
-	}
-	if tr.Disc().Number != 1 {
-		t.Fail()
-	}
+	assert.Nil(t, setTrackDiscNumber("1", r, tr))
+	assert.Equal(t, tr.Disc().Number, 1)
 	tr.Position = "2.2"
-	if setTrackDiscNumber("1", r, tr) == nil || setTrackDiscNumber("Vol.1", r, tr) == nil {
-		t.Fail()
-	}
+	assert.NotNil(t, setTrackDiscNumber("1", r, tr))
+	assert.NotNil(t, setTrackDiscNumber("Vol.1", r, tr))
 }

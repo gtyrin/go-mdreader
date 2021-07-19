@@ -8,6 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	md "github.com/ytsiuryn/ds-audiomd"
 	srv "github.com/ytsiuryn/ds-microservice"
@@ -26,20 +27,19 @@ func TestBaseServiceCommands(t *testing.T) {
 	cl := srv.NewRPCClient()
 	defer cl.Close()
 
-	correlationID, data, _ := srv.CreateCmdRequest("ping")
+	correlationID, data, err := srv.CreateCmdRequest("ping")
+	require.NoError(t, err)
 	cl.Request(ServiceName, correlationID, data)
 	respData := cl.Result(correlationID)
-	if len(respData) != 0 {
-		t.Fail()
-	}
+	assert.Empty(t, respData)
 
-	correlationID, data, _ = srv.CreateCmdRequest("x")
+	correlationID, data, err = srv.CreateCmdRequest("x")
+	require.NoError(t, err)
 	cl.Request(ServiceName, correlationID, data)
-	vInfo, _ := srv.ParseErrorAnswer(cl.Result(correlationID))
+	vInfo, err := srv.ParseErrorAnswer(cl.Result(correlationID))
+	require.NoError(t, err)
 	// {"error": "Unknown command: x", "context": "Message dispatcher"}
-	if vInfo.Error != "Unknown command: x" {
-		t.Fail()
-	}
+	assert.Equal(t, vInfo.Error, "Unknown command: x")
 }
 
 func TestDirRequest(t *testing.T) {
@@ -59,6 +59,22 @@ func TestDirRequest(t *testing.T) {
 		checkResp(t, suggestion)
 	}
 }
+
+// func TestRepoDir(t *testing.T) {
+// 	ctx, cancel := context.WithCancel(context.Background())
+// 	defer cancel()
+
+// 	startTestService(ctx)
+
+// 	cl := srv.NewRPCClient()
+// 	defer cl.Close()
+// 	correlationID, data, err := CreateDirRequest("/home/me/Downloads/TEST/!AFTER FOREVER [2005] [SACD] Remagine [DSD-CD-FLAC]")
+// 	require.NoError(t, err)
+// 	cl.Request(ServiceName, correlationID, data)
+
+// 	data = cl.Result(correlationID)
+// 	log.Fatal(string(data))
+// }
 
 func checkResp(t *testing.T, suggestion *md.Suggestion) {
 	r := suggestion.Release
