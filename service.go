@@ -111,18 +111,14 @@ func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Del
 		ar.AnswerWithError(delivery, errors.New("directory is not album entry"), req.Path)
 		return
 	}
-	set := md.NewSuggestionSet()
-	set.Suggestions = append(set.Suggestions, &md.Suggestion{
-		ServiceName: ServiceName,
-		Release:     r,
-	})
-	set.Optimize()
+	assumption := md.NewAssumption(r)
+	assumption.Optimize()
 	// отправка ответа
-	if suggestionJSON, err := json.Marshal(set); err != nil {
+	if assumptionJSON, err := json.Marshal(assumption); err != nil {
 		ar.AnswerWithError(delivery, err, "Response")
 	} else {
-		ar.Log.Debug(string(suggestionJSON))
-		ar.Answer(delivery, suggestionJSON)
+		ar.Log.Debug(string(assumptionJSON))
+		ar.Answer(delivery, assumptionJSON)
 	}
 }
 
