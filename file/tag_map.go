@@ -289,8 +289,8 @@ func ProcessTags(tags map[TagKey]string, r *md.Release, t *md.Track) error {
 			}
 		// Version
 		// --- People & Organizations ---
-		case AlbumArtist:
-			r.Actors.Add(v, "", "")
+		case AlbumArtist, Performer:
+			r.ActorRoles.Add(v, "performer")
 		case TrackArtist, InvolvedPeople:
 			parseAndAddActors(v, t)
 		case Arranger:
@@ -314,8 +314,6 @@ func ProcessTags(tags map[TagKey]string, r *md.Release, t *md.Track) error {
 		// MusicianCredits
 		// Organisation
 		// OriginalArtist
-		case Performer:
-			r.ActorRoles.Add(v, "performer")
 		case Producer:
 			t.Record.ActorRoles.Add(v, "producer")
 		case Publisher, Label:

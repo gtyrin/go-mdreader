@@ -2,8 +2,6 @@ package mdreader
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -79,28 +77,44 @@ func (ar *AudioMdReader) logRequest(req *AudioReaderRequest) {
 
 // RunCmdByName выполняет команды и возвращает результат клиенту в виде JSON-сообщения.
 func (ar *AudioMdReader) RunCmd(req *AudioReaderRequest, delivery *amqp.Delivery) {
+	var data []byte
+	var err error
+	var baseCmd bool
+
 	switch req.Cmd {
 	case "release":
-		ar.releaseInfo(req, delivery)
+		data, err = ar.releaseInfo(req, delivery)
 	default:
 		ar.Service.RunCmd(req.Cmd, delivery)
+		baseCmd = true
+	}
+
+	if baseCmd {
+		return
+	}
+
+	if err != nil {
+		ar.AnswerWithError(delivery, err, req.Cmd)
+	} else {
+		ar.Log.Debug(string(data))
+		ar.Answer(delivery, data)
 	}
 }
 
-func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Delivery) {
-	// прием входного запроса
+func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Delivery) (
+	[]byte, error) {
+
 	fileinfo, err := ioutil.ReadDir(req.Path)
 	if err != nil {
-		ar.AnswerWithError(delivery, err, "Directory reading")
-		return
+		return nil, err
 	}
+
 	r := md.NewRelease()
 	for _, fi := range fileinfo {
 		fn := filepath.Join(req.Path, fi.Name())
 		track, err := ar.readTrackFile(fn, r)
 		if err != nil {
-			ar.AnswerWithError(delivery, err, fmt.Sprintf("File %s parsing", fn))
-			return
+			return nil, err
 		}
 		if track == nil { // not audio file
 			continue
@@ -108,18 +122,13 @@ func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Del
 		r.Tracks = append(r.Tracks, track)
 	}
 	if len(r.Tracks) == 0 {
-		ar.AnswerWithError(delivery, errors.New("directory is not album entry"), req.Path)
-		return
+		return nil, err
 	}
+
 	assumption := md.NewAssumption(r)
 	assumption.Optimize()
-	// отправка ответа
-	if assumptionJSON, err := json.Marshal(assumption); err != nil {
-		ar.AnswerWithError(delivery, err, "Response")
-	} else {
-		ar.Log.Debug(string(assumptionJSON))
-		ar.Answer(delivery, assumptionJSON)
-	}
+
+	return json.Marshal(assumption)
 }
 
 func (ar *AudioMdReader) readTrackFile(fn string, r *md.Release) (*md.Track, error) {
