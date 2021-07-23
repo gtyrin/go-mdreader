@@ -72,11 +72,11 @@ func checkResp(suite *suite.Suite, assumption *md.Assumption) {
 	r := assumption.Release
 	tr := assumption.Release.Tracks[0]
 	suite.Equal(r.Title, "test_album_title")
-	suite.Equal(r.ActorRoles.First(), md.ActorName("test_performer"))
+	suite.Equal(r.ActorRoles.First(), "test_performer")
 	suite.Equal(r.Discs[0].Number, 1)
 	suite.Equal(r.TotalTracks, 10)
 	suite.Equal(r.Tracks[0].Position, "03")
-	suite.Equal(tr.Composition.ActorRoles.First(), md.ActorName("test_composer"))
+	suite.Equal(tr.Composition.ActorRoles.First(), "test_composer")
 	suite.Equal(tr.Record.Actors.First(), "test_track_artist")
 	suite.Equal(tr.Record.Genres[0], "test_genre")
 	suite.Equal(tr.Title, "test_track_title")
