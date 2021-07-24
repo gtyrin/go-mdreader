@@ -47,8 +47,8 @@ func (suite *MdreaderTestSuite) TestDirRequest() {
 		correlationID, data, _ := CreateDirRequest("testdata/" + subdir)
 		suite.cl.Request(ServiceName, correlationID, data)
 
-		assumption, _ := ParseDirAnswer(suite.cl.Result(correlationID))
-		checkResp(&suite.Suite, assumption)
+		resp, _ := ParseDirAnswer(suite.cl.Result(correlationID))
+		checkResp(&suite.Suite, resp.Assumption)
 	}
 }
 

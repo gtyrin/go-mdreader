@@ -38,6 +38,22 @@ func New() *AudioMdReader {
 		Service: srv.NewService(ServiceName)}
 }
 
+// AnswerWithError заполняет структуру ответа информацией об ошибке.
+func (ar *AudioMdReader) AnswerWithError(delivery *amqp.Delivery, err error, context string) {
+	ar.LogOnError(err, context)
+	req := &AudioReaderResponse{
+		Error: srv.ErrorResponse{
+			Error:   err.Error(),
+			Context: context,
+		},
+	}
+	data, err := json.Marshal(req)
+	if err != nil {
+		srv.FailOnError(err, "Answer marshalling error")
+	}
+	ar.Answer(delivery, data)
+}
+
 // Start запускает Web Poller и цикл обработки взодящих запросов.
 // Контролирует сигнал завершения цикла и последующего освобождения ресурсов микросервиса.
 func (ar *AudioMdReader) Start(msgs <-chan amqp.Delivery) {
@@ -128,7 +144,7 @@ func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Del
 	assumption := md.NewAssumption(r)
 	assumption.Optimize()
 
-	return json.Marshal(assumption)
+	return json.Marshal(AudioReaderResponse{Assumption: assumption})
 }
 
 func (ar *AudioMdReader) readTrackFile(fn string, r *md.Release) (*md.Track, error) {
