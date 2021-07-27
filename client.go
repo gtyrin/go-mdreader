@@ -16,8 +16,8 @@ type AudioReaderRequest struct {
 }
 
 type AudioReaderResponse struct {
-	Assumption *md.Assumption    `json:"assumption,omitempty"`
-	Error      srv.ErrorResponse `json:"error,omitempty"`
+	Assumption *md.Assumption     `json:"assumption,omitempty"`
+	Error      *srv.ErrorResponse `json:"error,omitempty"`
 }
 
 // CreateDirRequest формирует данные запроса поиска релиза по указанным метаданным.

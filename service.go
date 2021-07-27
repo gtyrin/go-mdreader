@@ -42,7 +42,7 @@ func New() *AudioMdReader {
 func (ar *AudioMdReader) AnswerWithError(delivery *amqp.Delivery, err error, context string) {
 	ar.LogOnError(err, context)
 	req := &AudioReaderResponse{
-		Error: srv.ErrorResponse{
+		Error: &srv.ErrorResponse{
 			Error:   err.Error(),
 			Context: context,
 		},
@@ -95,17 +95,12 @@ func (ar *AudioMdReader) logRequest(req *AudioReaderRequest) {
 func (ar *AudioMdReader) RunCmd(req *AudioReaderRequest, delivery *amqp.Delivery) {
 	var data []byte
 	var err error
-	var baseCmd bool
 
 	switch req.Cmd {
 	case "release":
-		data, err = ar.releaseInfo(req, delivery)
+		data, err = ar.releaseInfo(req)
 	default:
 		ar.Service.RunCmd(req.Cmd, delivery)
-		baseCmd = true
-	}
-
-	if baseCmd {
 		return
 	}
 
@@ -117,8 +112,7 @@ func (ar *AudioMdReader) RunCmd(req *AudioReaderRequest, delivery *amqp.Delivery
 	}
 }
 
-func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest, delivery *amqp.Delivery) (
-	[]byte, error) {
+func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest) ([]byte, error) {
 
 	fileinfo, err := ioutil.ReadDir(req.Path)
 	if err != nil {

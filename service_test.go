@@ -52,20 +52,15 @@ func (suite *MdreaderTestSuite) TestDirRequest() {
 	}
 }
 
-// func TestRepoDir(t *testing.T) {
-// 	ctx, cancel := context.WithCancel(context.Background())
-// 	defer cancel()
-
-// 	startTestService(ctx)
-
-// 	cl := srv.NewRPCClient()
-// 	defer cl.Close()
-// 	correlationID, data, err := CreateDirRequest("/home/me/Downloads/TEST/!AFTER FOREVER [2005] [SACD] Remagine [DSD-CD-FLAC]")
-// 	require.NoError(t, err)
-// 	cl.Request(ServiceName, correlationID, data)
-
-// 	data = cl.Result(correlationID)
-// 	log.Fatal(string(data))
+// func (suite *MdreaderTestSuite) TestRepoDir() {
+// 	home, err := os.UserHomeDir()
+// 	require.NoError(suite.T(), err)
+// 	correlationID, data, err := CreateDirRequest(filepath.Join(home, "Downloads/TEST/!AFTER FOREVER [2005] [SACD] Remagine [DSD-CD-FLAC]"))
+// 	require.NoError(suite.T(), err)
+// 	suite.cl.Request(ServiceName, correlationID, data)
+// 	data = suite.cl.Result(correlationID)
+// 	err = ioutil.WriteFile(filepath.Join(home, "Downloads/TEST/test.json"), data, 0644)
+// 	require.NoError(suite.T(), err)
 // }
 
 func checkResp(suite *suite.Suite, assumption *md.Assumption) {
