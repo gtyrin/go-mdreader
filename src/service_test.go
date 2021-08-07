@@ -44,11 +44,12 @@ func (suite *MdreaderTestSuite) TestBaseServiceCommands() {
 
 func (suite *MdreaderTestSuite) TestDirRequest() {
 	for _, subdir := range []string{"dsf", "flac", "mp3", "wavpack"} {
-		correlationID, data, _ := CreateDirRequest("testdata/" + subdir)
+		correlationID, data, _ := CreateDirRequest("../testdata/" + subdir)
 		suite.cl.Request(ServiceName, correlationID, data)
 
-		resp, _ := ParseDirAnswer(suite.cl.Result(correlationID))
-		checkResp(&suite.Suite, resp.Assumption)
+		resp, err := ParseDirAnswer(suite.cl.Result(correlationID))
+		require.NoError(suite.T(), err)
+		checkResp(&suite.Suite, resp.Unwrap())
 	}
 }
 

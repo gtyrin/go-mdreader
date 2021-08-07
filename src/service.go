@@ -11,15 +11,13 @@ import (
 	"github.com/streadway/amqp"
 
 	md "github.com/ytsiuryn/ds-audiomd"
-	"github.com/ytsiuryn/ds-mdreader/file"
+	"github.com/ytsiuryn/ds-mdreader/src/file"
 	srv "github.com/ytsiuryn/ds-microservice"
 )
 
 // Описание сервиса
 const (
-	ServiceSubsystem   = "audio"
-	ServiceName        = "mdreader"
-	ServiceDescription = "Audio Metadata Reader"
+	ServiceName = "mdreader"
 )
 
 // AudioMdReader содержит состояние сервиса чтения метаданных.
@@ -27,15 +25,9 @@ type AudioMdReader struct {
 	*srv.Service
 }
 
-type Assumption struct {
-	ServiceName string `json:"service"`
-	*md.Release `json:"release"`
-}
-
 // New создает объект нового клиента AudioMetadataReader.
 func New() *AudioMdReader {
-	return &AudioMdReader{
-		Service: srv.NewService(ServiceName)}
+	return &AudioMdReader{srv.NewService(ServiceName)}
 }
 
 // AnswerWithError заполняет структуру ответа информацией об ошибке.
@@ -48,9 +40,7 @@ func (ar *AudioMdReader) AnswerWithError(delivery *amqp.Delivery, err error, con
 		},
 	}
 	data, err := json.Marshal(req)
-	if err != nil {
-		srv.FailOnError(err, "Answer marshalling error")
-	}
+	srv.FailOnError(err, "Answer marshalling error")
 	ar.Answer(delivery, data)
 }
 
@@ -85,13 +75,13 @@ func (ar *AudioMdReader) cleanup() {
 // Отображение сведений о выполняемом запросе.
 func (ar *AudioMdReader) logRequest(req *AudioReaderRequest) {
 	if len(req.Path) > 0 {
-		ar.Log.WithField("args", req.Path).Info(req.Cmd + "()")
+		ar.Log.WithField("dir", req.Path).Info(req.Cmd + "()")
 	} else {
 		ar.Log.Info(req.Cmd + "()")
 	}
 }
 
-// RunCmdByName выполняет команды и возвращает результат клиенту в виде JSON-сообщения.
+// RunCmd выполняет команды и возвращает результат клиенту в виде JSON-сообщения.
 func (ar *AudioMdReader) RunCmd(req *AudioReaderRequest, delivery *amqp.Delivery) {
 	var data []byte
 	var err error
