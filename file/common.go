@@ -20,7 +20,7 @@ type TrackMetadataReader interface {
 // // RutrackerRegexp is a regexp for Rutracker.org URL
 // var RutrackerRegexp = regexp.MustCompile(`^http[s]?:\/\/rutracker\.org\/forum\/viewtopic\.php\?t=(\d+)\s*`)
 
-var infoLoaders = map[string]TrackMetadataReader{
+var InfoLoaders = map[string]TrackMetadataReader{
 	".dsf":  new(Dsf),
 	".flac": new(Flac),
 	".wv":   new(Wv),
@@ -29,7 +29,7 @@ var infoLoaders = map[string]TrackMetadataReader{
 
 // Reader returns TrackMetadataReader of the appropriate type or nil.
 func Reader(fn string) TrackMetadataReader {
-	if cls, ok := infoLoaders[filepath.Ext(strings.ToLower(fn))]; ok {
+	if cls, ok := InfoLoaders[filepath.Ext(strings.ToLower(fn))]; ok {
 		return cls
 	}
 	return nil

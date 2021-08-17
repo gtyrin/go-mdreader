@@ -6,12 +6,13 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"reflect"
 	"syscall"
 
 	"github.com/streadway/amqp"
 
 	md "github.com/ytsiuryn/ds-audiomd"
-	"github.com/ytsiuryn/ds-mdreader/src/file"
+	afile "github.com/ytsiuryn/ds-mdreader/file"
 	srv "github.com/ytsiuryn/ds-microservice"
 )
 
@@ -19,6 +20,9 @@ import (
 const (
 	ServiceName = "mdreader"
 )
+
+// SupportedExtensions возвращает список поддерживаемых микросервисом расширений аудио-файлов.
+var SupportedExtensions = reflect.ValueOf(afile.InfoLoaders).MapKeys()
 
 // AudioMdReader содержит состояние сервиса чтения метаданных.
 type AudioMdReader struct {
@@ -32,7 +36,7 @@ func New() *AudioMdReader {
 
 // AnswerWithError заполняет структуру ответа информацией об ошибке.
 func (ar *AudioMdReader) AnswerWithError(delivery *amqp.Delivery, err error, context string) {
-	ar.LogOnError(err, context)
+	ar.LogOnErrorWithContext(err, context)
 	req := &AudioReaderResponse{
 		Error: &srv.ErrorResponse{
 			Error:   err.Error(),
@@ -44,9 +48,11 @@ func (ar *AudioMdReader) AnswerWithError(delivery *amqp.Delivery, err error, con
 	ar.Answer(delivery, data)
 }
 
-// Start запускает Web Poller и цикл обработки взодящих запросов.
+// StartWithConnection запускает Web Poller и цикл обработки взодящих запросов.
 // Контролирует сигнал завершения цикла и последующего освобождения ресурсов микросервиса.
-func (ar *AudioMdReader) Start(msgs <-chan amqp.Delivery) {
+func (ar *AudioMdReader) StartWithConnection(connstr string) {
+	msgs := ar.Service.ConnectToMessageBroker(connstr)
+
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
@@ -132,7 +138,7 @@ func (ar *AudioMdReader) releaseInfo(req *AudioReaderRequest) ([]byte, error) {
 }
 
 func (ar *AudioMdReader) readTrackFile(fn string, r *md.Release) (*md.Track, error) {
-	if reader := file.Reader(fn); reader != nil {
+	if reader := afile.Reader(fn); reader != nil {
 		f, err := os.OpenFile(fn, os.O_RDONLY, 0444)
 		if err != nil {
 			return nil, err

@@ -1,3 +1,6 @@
+// FLAC processing module.
+// Specification link: https://xiph.org/flac/format.html
+
 package file
 
 import (

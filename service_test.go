@@ -44,7 +44,7 @@ func (suite *MdreaderTestSuite) TestBaseServiceCommands() {
 
 func (suite *MdreaderTestSuite) TestDirRequest() {
 	for _, subdir := range []string{"dsf", "flac", "mp3", "wavpack"} {
-		correlationID, data, _ := CreateDirRequest("../testdata/" + subdir)
+		correlationID, data, _ := CreateDirRequest("testdata/" + subdir)
 		suite.cl.Request(ServiceName, correlationID, data)
 
 		resp, err := ParseDirAnswer(suite.cl.Result(correlationID))
@@ -98,9 +98,8 @@ func checkResp(suite *suite.Suite, assumption *md.Assumption) {
 
 func (suite *MdreaderTestSuite) startTestService() {
 	testService := New()
-	msgs := testService.ConnectToMessageBroker("amqp://guest:guest@localhost:5672/")
 	// testService.Log.SetLevel(log.DebugLevel)
-	go testService.Start(msgs)
+	go testService.StartWithConnection("amqp://guest:guest@localhost:5672/")
 }
 
 func TestMdreaderService(t *testing.T) {
