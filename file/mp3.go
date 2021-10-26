@@ -13,6 +13,12 @@ import (
 	intutils "github.com/ytsiuryn/go-intutils"
 )
 
+// Bitrate ..
+type Bitrate = int
+
+// SamplingRate ..
+type SamplingRate = int
+
 // ErrMP3Ver25NotSupport ..
 var ErrMP3Ver25NotSupport = errors.New("MPEG2.5 is not supported yet")
 
@@ -40,7 +46,7 @@ const (
 )
 
 // BitrateMap defines existing bitrates
-var BitrateMap = map[MPEGVersion]map[LayerType]map[byte]int{
+var BitrateMap = map[MPEGVersion]map[LayerType]map[byte]Bitrate{
 	MPEG1: {
 		Layer1: {
 			1:  32,
@@ -144,7 +150,7 @@ var BitrateMap = map[MPEGVersion]map[LayerType]map[byte]int{
 }
 
 // FrequencyMap describes audio samlerate
-var FrequencyMap = map[MPEGVersion]map[byte]int{
+var FrequencyMap = map[MPEGVersion]map[byte]SamplingRate{
 	MPEG1: {
 		0: 44100,
 		1: 48000,

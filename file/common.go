@@ -20,6 +20,7 @@ type TrackMetadataReader interface {
 // // RutrackerRegexp is a regexp for Rutracker.org URL
 // var RutrackerRegexp = regexp.MustCompile(`^http[s]?:\/\/rutracker\.org\/forum\/viewtopic\.php\?t=(\d+)\s*`)
 
+// InfoLoaders определяет соответствие расширения аудиофайла обработчику.
 var InfoLoaders = map[string]TrackMetadataReader{
 	".dsf":  new(Dsf),
 	".flac": new(Flac),

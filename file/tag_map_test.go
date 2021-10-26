@@ -20,7 +20,8 @@ func TestSetDiscID(t *testing.T) {
 	setDiscID(tagMapTestData, r, tr)
 	assert.Len(t, r.Discs, 1)
 	assert.Equal(t, r.Discs[0].Number, 1)
-	assert.True(t, r.Disc(1).IDs.Exists("discid"))
+	_, ok := r.Disc(1).IDs[md.ID]
+	assert.True(t, ok)
 }
 
 func TestSetTrackPositionAndTotalTracks(t *testing.T) {

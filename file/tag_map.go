@@ -17,262 +17,9 @@ import (
 	stringutils "github.com/ytsiuryn/go-stringutils"
 )
 
-// TagKey - тип для обозначения обобщенных констант.
-type TagKey uint8
-
-// TagScheme - тип для обозначения схем кодирования метаданных.
-type TagScheme uint8
-
-// Описание поддерживаемых системой схем кодирования.
-const (
-	ID3v2         TagScheme = iota // Flac, Dsf, Wv
-	VorbisComment                  // Flac
-	APEv2                          // Wv
-)
-
-// 	Обобщенные теги для различных схем теггирования.
-const (
-	// Titles
-	AlbumTitle TagKey = iota
-	DiscSetSubtitle
-	ContentGroup
-	TrackTitle
-	TrackSubtitle
-	Version
-	// People & Organizations
-	AlbumArtist
-	TrackArtist
-	Arranger
-	AuthorWriter
-	Writer
-	Composer
-	Conductor
-	Engineer
-	Ensemble
-	InvolvedPeople
-	Lyricist
-	MixDJ
-	MixEngineer
-	MusicianCredits
-	Organisation
-	OriginalArtist
-	Performer
-	Producer
-	Publisher
-	Label
-	LabelNumber
-	RemixedBy
-	Soloists
-	// Counts & Indexes
-	DiscNumber
-	DiscTotal
-	TrackNumber
-	TrackTotal
-	PartNumber
-	Length
-	// Dates
-	ReleaseDate
-	Year
-	OriginalReleaseDate
-	RecordingDates
-	// Identifiers
-	ISRC
-	Barcode
-	CatalogueNumber
-	UPC
-	DiscID
-	AccurateRipDiscID
-	DiscogsReleaseID
-	MusicbrainzAlbumID
-	RutrackerID
-	// Flags
-	Compilation
-	// Ripping & Encoding
-	FileType
-	MediaType
-	SourceMedia
-	Source
-	// URLs
-	AudioSourceWebpageURL
-	CommercialInformationURL
-	TrackArtistWebPageURL
-	// Style
-	Genre
-	Mood
-	Style
-	// Miscellaneous
-	Country
-	Comments
-	Description
-	CopyrightMessage
-	SyncedLyrics
-	UnsyncedLyrics
-	Language
-)
-
-// SchemaTagToUniKey - соответствие тега определенной схемы кодирования единому коду тега.
-var SchemaTagToUniKey = map[TagScheme]map[string]TagKey{
-	ID3v2: {
-		"TALB":                     AlbumTitle,
-		"TSST":                     DiscSetSubtitle,
-		"TIT1":                     ContentGroup,
-		"TIT2":                     TrackTitle,
-		"TIT3":                     TrackSubtitle,
-		"TPE2":                     AlbumArtist,
-		"TPE1":                     TrackArtist,
-		"IPLS:arranger":            Arranger,
-		"TIPL:arranger":            Arranger,
-		"TEXT":                     AuthorWriter,
-		"TCOM":                     Composer,
-		"TPE3":                     Conductor,
-		"IPLS:engineer":            Engineer,
-		"TIPL:engineer":            Engineer,
-		"IPLS":                     InvolvedPeople,
-		"TIPL":                     InvolvedPeople,
-		"IPLS:DJ-mix":              MixDJ,
-		"TIPL:DJ-mix":              MixDJ,
-		"IPLS:mix":                 MixEngineer,
-		"TIPL:mix":                 MixEngineer,
-		"TOPE":                     OriginalArtist,
-		"TMCL":                     Performer,
-		"IPLS:producer":            Producer,
-		"TIPL:producer":            Producer,
-		"TPUB":                     Publisher,
-		"TXXX:LABEL":               Publisher,
-		"TPE4":                     RemixedBy,
-		"TPOS":                     DiscNumber,
-		"TRCK":                     TrackNumber,
-		"TXXX:TRACKTOTAL":          TrackTotal,
-		"TLEN":                     Length,
-		"TDRC":                     ReleaseDate,
-		"TDAT":                     ReleaseDate,
-		"TYER":                     Year,
-		"TORY":                     OriginalReleaseDate,
-		"TDOR":                     OriginalReleaseDate,
-		"TRDA":                     RecordingDates,
-		"TSRC":                     ISRC,
-		"DISCID":                   DiscID,
-		"TXXX:BARCODE":             Barcode,
-		"TXXX:CATALOGNUMBER":       CatalogueNumber,
-		"TXXX:DISCOGS_RELEASE_ID":  DiscogsReleaseID,
-		"TXXX:MUSICBRAINZ_ALBUMID": MusicbrainzAlbumID,
-		"TXXX:RUTRACKER":           RutrackerID,
-		"TCMP":                     Compilation,
-		"TFLT":                     FileType,
-		"TMED":                     MediaType,
-		"WOAS":                     AudioSourceWebpageURL,
-		"WCOM":                     CommercialInformationURL,
-		"WOAR":                     TrackArtistWebPageURL,
-		"TCON":                     Genre,
-		"TMOO":                     Mood,
-		"TXXX:RELEASECOUNTRY":      Country,
-		"COMM":                     Comments,
-		"TCOP":                     CopyrightMessage,
-		"SYLT":                     SyncedLyrics,
-		"USLT":                     UnsyncedLyrics,
-		"TLAN":                     Language,
-	},
-	VorbisComment: {
-		"ALBUM":               AlbumTitle,
-		"DISCSUBTITLE":        DiscSetSubtitle,
-		"GROUPING":            ContentGroup,
-		"TITLE":               TrackTitle,
-		"SUBTITLE":            TrackSubtitle,
-		"VERSION":             Version,
-		"ALBUMARTIST":         AlbumArtist,
-		"ARTIST":              TrackArtist,
-		"ARRANGER":            Arranger,
-		"AUTHOR":              AuthorWriter,
-		"WRITER":              Writer,
-		"COMPOSER":            Composer,
-		"CONDUCTOR":           Conductor,
-		"ENGINEER":            Engineer,
-		"ENSEMBLE":            Ensemble,
-		"LYRICIST":            Lyricist,
-		"LANGUAGE":            Language,
-		"MIXER":               MixEngineer,
-		"ORGANIZATION":        Organisation,
-		"PERFORMER":           Performer,
-		"PRODUCER":            Producer,
-		"PUBLISHER":           Publisher,
-		"LABEL":               Label,
-		"LABELNO":             LabelNumber,
-		"REMIXER":             RemixedBy,
-		"SOLOISTS":            Soloists,
-		"DISCNUMBER":          DiscNumber,
-		"DISCTOTAL":           DiscTotal,
-		"TOTALDISCS":          DiscTotal,
-		"TRACKNUMBER":         TrackNumber,
-		"TRACKTOTAL":          TrackTotal,
-		"TOTALTRACKS":         TrackTotal,
-		"PARTNUMBER":          PartNumber,
-		"DATE":                ReleaseDate,
-		"ORIGINALDATE":        OriginalReleaseDate,
-		"ISRC":                ISRC,
-		"BARCODE":             Barcode,
-		"CATALOGNUMBER":       CatalogueNumber,
-		"UPC":                 UPC,
-		"DISCOGS_RELEASE_ID":  DiscogsReleaseID,
-		"MUSICBRAINZ_ALBUMID": MusicbrainzAlbumID,
-		"RUTRACKER":           RutrackerID,
-		"DISCID":              DiscID,
-		"ACCURATERIPDISCID":   AccurateRipDiscID,
-		"COMPILATION":         Compilation,
-		"MEDIA":               MediaType,
-		"SOURCEMEDIA":         SourceMedia,
-		"SOURCE":              Source,
-		"GENRE":               Genre,
-		"MOOD":                Mood,
-		"STYLE":               Style,
-		"RELEASECOUNTRY":      Country,
-		"COMMENT":             Comments,
-		"DESCRIPTION":         Description,
-		"COPYRIGHT":           CopyrightMessage,
-	},
-	APEv2: {
-		"ALBUM":               AlbumTitle,
-		"DISCSUBTITLE":        DiscSetSubtitle,
-		"GROUPING":            ContentGroup,
-		"TITLE":               TrackTitle,
-		"SUBTITLE":            TrackSubtitle,
-		"ALBUMARTIST":         AlbumArtist,
-		"ARTIST":              TrackArtist,
-		"ARRANGER":            Arranger,
-		"WRITER":              Writer,
-		"COMPOSER":            Composer,
-		"CONDUCTOR":           Conductor,
-		"Enginee":             Engineer,
-		"LYRICIST":            Lyricist,
-		"LANGUAGE":            Language,
-		"MIXER":               MixEngineer,
-		"PERFORMER":           Performer,
-		"PRODUCER":            Producer,
-		"LABEL":               Label,
-		"MIXARTIST":           RemixedBy,
-		"DISC":                DiscNumber,
-		"TRACK":               TrackNumber,
-		"TRACKTOTAL":          TrackTotal,
-		"YEAR":                Year,
-		"ISRC":                ISRC,
-		"BARCODE":             Barcode,
-		"CATALOGNUMBER":       CatalogueNumber,
-		"DISCOGS_RELEASE_ID":  DiscogsReleaseID,
-		"MUSICBRAINZ_ALBUMID": MusicbrainzAlbumID,
-		"RUTRACKER":           RutrackerID,
-		"COMPILATION":         Compilation,
-		"MEDIA":               MediaType,
-		"SOURCEMEDIA":         SourceMedia,
-		"GENRE":               Genre,
-		"MOOD":                Mood,
-		"RELEASECOUNTRY":      Country,
-		"COMMENT":             Comments,
-		"COPYRIGHT":           CopyrightMessage,
-	},
-}
-
 // ProcessTags обрабатывает переданные теги, обновляя метаданные трека, альбома, релиза.
 // Необработанные теги возвращаются функцией обратно.
-func ProcessTags(tags map[TagKey]string, r *md.Release, t *md.Track) error {
+func ProcessTags(tags map[TagKey]TagValue, r *md.Release, t *md.Track) error {
 	var err error
 	for k, v := range tags {
 		switch k {
@@ -349,19 +96,19 @@ func ProcessTags(tags map[TagKey]string, r *md.Release, t *md.Track) error {
 		case ISRC:
 			t.IDs["isrc"] = v
 		case Barcode:
-			r.IDs["barcode"] = v
+			setBarcode(v, r)
 		case CatalogueNumber, LabelNumber:
 			setCatno(v, r)
 		case UPC:
-			r.IDs["upc"] = v
+			setBarcode(v, r) // ведь UPC=barcode?
 		case AccurateRipDiscID:
-			r.IDs["accuraterip"] = v
+			r.IDs[md.AccurateRip] = v
 		case DiscogsReleaseID:
-			r.IDs["discogs"] = v
+			r.IDs[md.DiscogsReleaseID] = v
 		case MusicbrainzAlbumID:
-			r.IDs["musicbrainz"] = v
+			r.IDs[md.MusicbrainzAlbumID] = v
 		case RutrackerID:
-			r.IDs["rutracker"] = v
+			r.IDs[md.Rutracker] = v
 		// --- Flags ---
 		case Compilation:
 			r.ReleaseRepeat = md.ReleaseRepeatCompilation
@@ -403,7 +150,7 @@ func ProcessTags(tags map[TagKey]string, r *md.Release, t *md.Track) error {
 
 // ----- Compound processing -----
 
-func setDiscID(tags map[TagKey]string, r *md.Release, t *md.Track) {
+func setDiscID(tags map[TagKey]TagValue, r *md.Release, t *md.Track) {
 	var pos string
 	if t.Position != "" {
 		pos = t.Position
@@ -414,12 +161,12 @@ func setDiscID(tags map[TagKey]string, r *md.Release, t *md.Track) {
 		if t.Disc() == nil {
 			t.LinkWithDisc(r.Disc(md.DiscNumberByTrackPos(pos)))
 		}
-		t.Disc().IDs["discid"] = tags[DiscID]
+		t.Disc().IDs[md.ID] = tags[DiscID]
 	}
 }
 
-func setTrackPositionAndTotalTracks(v string, r *md.Release, t *md.Track) {
-	flds := strings.Split(v, "/")
+func setTrackPositionAndTotalTracks(trackStr string, r *md.Release, t *md.Track) {
+	flds := strings.Split(trackStr, "/")
 	fldsLen := len(flds)
 	if 1 <= fldsLen && fldsLen <= 2 {
 		t.SetPosition(flds[0])
@@ -429,11 +176,11 @@ func setTrackPositionAndTotalTracks(v string, r *md.Release, t *md.Track) {
 	}
 }
 
-func parseAndAddDiscFormat(v string, r *md.Release, t *md.Track) {
+func parseAndAddDiscFormat(mediaStr string, r *md.Release, t *md.Track) {
 	if t.Disc() == nil || t.Disc().Number == 0 {
 		return
 	}
-	if media := md.DecodeMedia(v); media != 0 {
+	if media := md.DecodeMedia(mediaStr); media != 0 {
 		discInd := t.Disc().Number - 1
 		r.Discs[discInd].Format = &md.DiscFormat{Media: media}
 	}
@@ -442,13 +189,13 @@ func parseAndAddDiscFormat(v string, r *md.Release, t *md.Track) {
 // ----- Release processing -----
 
 // case "RELEASECOUNTRY", "DISCOGS_COUNTRY", "COUNTRY":
-func parseAndAddCountries(v string, r *md.Release) {
-	r.Country = v
+func parseAndAddCountries(country string, r *md.Release) {
+	r.Country = country
 }
 
 // Разбор числового значения даты
-func parseAndSetYears(yearString string, r *md.Release) {
-	flds := stringutils.SplitIntoRegularFields(yearString)
+func parseAndSetYears(yearStr string, r *md.Release) {
+	flds := stringutils.SplitIntoRegularFields(yearStr)
 	fldLen := len(flds)
 	if fldLen == 0 {
 		return
@@ -462,14 +209,14 @@ func parseAndSetYears(yearString string, r *md.Release) {
 
 // Разбор timestamp ISO 8601 (yyyy-MM-ddTHH:mm:ss) или ее подстроки для Release.Year.
 // TODO: вынести разбор в отдельную функцию.
-func parseAndSetYearFromDate(v string, r *md.Release) {
-	r.Year = stringutils.NaiveStringToInt(v)
+func parseAndSetYearFromDate(dateStr string, r *md.Release) {
+	r.Year = stringutils.NaiveStringToInt(dateStr)
 }
 
 // Разбор timestamp ISO 8601 (yyyy-MM-ddTHH:mm:ss) или ее подстроки для Release.Album.Year.
 // TODO: вынести разбор в отдельную функцию.
-func parseAndSetOriginalYearFromDate(v string, r *md.Release) {
-	r.Original.Year = stringutils.NaiveStringToInt(v)
+func parseAndSetOriginalYearFromDate(dateStr string, r *md.Release) {
+	r.Original.Year = stringutils.NaiveStringToInt(dateStr)
 }
 
 func setCopyright(cr string, r *md.Release) {
@@ -478,18 +225,25 @@ func setCopyright(cr string, r *md.Release) {
 	}
 }
 
-func setLabels(v string, r *md.Release) {
+func setLabels(label string, r *md.Release) {
 	if r.Publishing == nil {
 		r.Publishing = append(r.Publishing, &md.Publishing{})
 	}
-	r.Publishing[0].Name = v
+	r.Publishing[0].Name = label
 }
 
-func setCatno(v string, r *md.Release) {
+func setCatno(catno string, r *md.Release) {
 	if r.Publishing == nil {
 		r.Publishing = append(r.Publishing, &md.Publishing{})
 	}
-	r.Publishing[0].Catno = v
+	r.Publishing[0].Catno = catno
+}
+
+func setBarcode(barcode string, r *md.Release) {
+	if r.Publishing == nil {
+		r.Publishing = append(r.Publishing, &md.Publishing{})
+	}
+	r.Publishing[0].IDs[md.Barcode] = barcode
 }
 
 // ----- Track processing -----
@@ -504,14 +258,14 @@ func parseAndAddActors(names string, track *md.Track) {
 				track.Record.ActorRoles.Add(strings.TrimSpace(flds[0]), strings.TrimSpace(role))
 			}
 		} else {
-			track.Record.Actors.Add(name, "", "")
+			track.Record.Actors.Add(name, 0, "")
 		}
 	}
 }
 
 // Обработка строк "hh:mm:ss" для записи длительности трека в миллисекундах.
-func parseAndSetTrackDuration(v string, t *md.Track) {
-	t.Duration = intutils.NewDurationFromString(v)
+func parseAndSetTrackDuration(durationStr string, t *md.Track) {
+	t.Duration = intutils.NewDurationFromString(durationStr)
 }
 
 func setMood(moods string, track *md.Track) {
@@ -520,9 +274,9 @@ func setMood(moods string, track *md.Track) {
 	}
 }
 
-func setTrackDiscNumber(v string, r *md.Release, t *md.Track) error {
+func setTrackDiscNumber(discNumStr string, r *md.Release, t *md.Track) error {
 	if t.Position != "" {
-		dn, err := strconv.Atoi(v)
+		dn, err := strconv.Atoi(discNumStr)
 		if err != nil {
 			return err
 		}
